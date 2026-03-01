@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Maui.Controls;
 
 namespace LaundryApplication.ViewModels
 {
@@ -17,7 +18,7 @@ namespace LaundryApplication.ViewModels
         private string _apartmentNumber;
         private bool _isBusy;
 
-        private string Title
+        public string Title
         {
             get => _title;
             set
@@ -58,37 +59,55 @@ namespace LaundryApplication.ViewModels
         {
             _reportService = reportService;
             SubmitReportCommand = new Command(async () => await SubmitReport(), () => !IsBusy);
-
         }
+
         private async Task SubmitReport()
         {
-            if (string.IsNullOrWhiteSpace(Title) || string.IsNullOrWhiteSpace (Description))
+            if (string.IsNullOrWhiteSpace(Title) || string.IsNullOrWhiteSpace(Description))
             {
-                await Application.Current.MainPage.DisplayAlert("Error, please fill both The Title and Description! ");
+                await DisplayErrorAlert("Validation Error", "Please fill both the Title and Description!");
                 return;
             }
             IsBusy = true;
-            ((Command)SubmitReportCommand).ChangeCanExecute(); // Disable the button while processing
+            ((Command)SubmitReportCommand).ChangeCanExecute();
 
-            var newReport = new IssueReports
+            try
             {
-                Title = this.Title,
-                Description = this.Description,
-                ApartmentNumber = this.ApartmentNumber,
-                DateReported = DateTime.Now,
-                IsFixed = false,
-            };
-            var success = await _reportService.SubmitReportAsync(newReport);
-            if (success)
-            {
-                await Application.Current.MainPage.DisplayAlert("Success", "Report submitted successfully! " );
-                Title = string.Empty;
-                Description = string.Empty;
+                var newReport = new IssueReports
+                {
+                    Title = this.Title,
+                    Description = this.Description,
+                    ApartmentNumber = this.ApartmentNumber,
+                    DateReported = DateTime.Now,
+                    IsFixed = false,
+                };
+                var success = await _reportService.SubmitReportAsync(newReport);
+                if (success)
+                {
+                    await DisplaySuccessAlert("Success", "Report submitted successfully!");
+                    Title = string.Empty;
+                    Description = string.Empty;
+                }
+                else
+                {
+                    await DisplayErrorAlert("Error", "Failed to submit report. Please try again later.");
+                }
             }
-            else
+            finally
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Failed to submit report. Please try again later.");
+                IsBusy = false;
+                ((Command)SubmitReportCommand).ChangeCanExecute();
             }
+        }
+
+        private Task DisplaySuccessAlert(string title, string message)
+        {
+            return Application.Current.MainPage.DisplayAlert(title, message, "OK");
+        }
+
+        private Task DisplayErrorAlert(string title, string message)
+        {
+            return Application.Current.MainPage.DisplayAlert(title, message, "OK");
         }
     }
 }

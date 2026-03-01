@@ -9,11 +9,11 @@ namespace LaundryApplication.Models
 {
     internal class IssueReports
     {
-        int Id { get; set; }
+        private int Id { get; set; }
         public string Title { get; set; }
-        DateTime DateReported { get; set; } 
+        public DateTime DateReported { get; set; } // Changed from private to public
         public string ApartmentNumber { get; set; }
-        public string Description { get; set; } // Mer detaljerad beskrivning av problemet
-        bool IsFixed { get; set; } = false;
+        public string Description { get; set; }
+        public bool IsFixed { get; set; } // Changed from private to public
     }
 }

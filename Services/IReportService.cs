@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace LaundryApplication.Services
 {
-    internal class IReportService
+    internal interface IReportService
     {
-        Task<bool> SubmitReportAsync(IssueReport report);
+        Task<bool> SubmitReportAsync(IssueReports report);
     }
 }
