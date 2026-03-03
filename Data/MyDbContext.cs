@@ -11,6 +11,8 @@ namespace LaundryApplication.Data
     public class MyDbContext : DbContext
     {
         public DbSet<Booking> Bookings { get; set; }
+        public DbSet<IssueReports> IssueReports { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
